@@ -29,8 +29,14 @@ export default function Interactive() {
     const [nPoints, setNPoints] = useState(11);
     const [corrections, setCorrections] = useState(2);
 
-    // NEW: target x where the question asks you to find y
-    const [targetX, setTargetX] = useState(0.4); // default demo
+    // target x to evaluate y at
+    const [targetX, setTargetX] = useState(0.4);
+
+    // -------- number formatter: normal decimals, trims trailing zeros --------
+    const fmt = (v, digits = 9) =>
+        (v === null || v === undefined || !Number.isFinite(v))
+            ? "—"
+            : parseFloat(Number(v).toFixed(digits)).toString();
 
     const f = useMemo(() => makeF(expr), [expr]);
 
@@ -56,7 +62,7 @@ export default function Interactive() {
                 { i: 3, x: x3, corr: y3 },
             ];
 
-        // utility to check if a given x sits on the grid x0 + m*h
+        // check if x* lies on grid x0 + m*h
         const gridCheck = (xStar) => {
             const h = hEst;
             const m = (xStar - x0) / h;
@@ -77,18 +83,16 @@ export default function Interactive() {
     const targetInfo = useMemo(() => {
         if (!data?.length) return { status: "no-data" };
 
-        const { onGrid, m } = gridCheck(targetX);
+        const { onGrid } = gridCheck(targetX);
         if (!onGrid) {
-            // suggest nearest grid x
             const xNear = x0 + Math.round((targetX - x0) / h) * h;
             return {
                 status: "off-grid",
-                message: `Target x must align with the grid x0 + m*h. Nearest grid point: ${xNear.toFixed(6)}.`,
+                message: `Target x must align with the grid x0 + m*h. Nearest grid point: ${fmt(xNear, 6)}.`,
                 nearestX: xNear,
             };
         }
 
-        // we have rows from i=0.. up to nPoints-1 (if uniform)
         const row = data.find((r) => Math.abs(r.x - targetX) < 1e-9);
         if (!row) {
             return {
@@ -208,12 +212,11 @@ export default function Interactive() {
                     </div>
 
                     <p className="text-xs text-slate-400 mt-3">
-                        h = x1 - x0 = {(x1 - x0).toFixed(6)} (must be constant).
+                        h = x1 - x0 = {fmt(x1 - x0, 6)} (must be constant).
                     </p>
                 </div>
 
-
-                {/* NEW: Target x -> y(x) */}
+                {/* Target x -> y(x) */}
                 <div className="bg-slate-900/50 border border-slate-700 rounded-2xl p-4 lg:col-span-1">
                     <h2 className="font-semibold mb-3">Find y at x*</h2>
                     <label className="block text-sm">Target x (x*)</label>
@@ -225,9 +228,15 @@ export default function Interactive() {
                     />
                     {targetInfo.status === "ok" && (
                         <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm">
-                            <div><span className="text-emerald-300 font-semibold">x*</span> = {targetInfo.x.toFixed(6)} (i = {targetInfo.idx})</div>
-                            <div className="mt-1">y<sub>pred</sub>(x*) = {targetInfo.pred !== undefined ? targetInfo.pred.toExponential(6) : "—"}</div>
-                            <div>y<sub>corr</sub>(x*) = {targetInfo.corr !== undefined ? targetInfo.corr.toExponential(6) : "—"}</div>
+                            <div>
+                                <span className="text-emerald-300 font-semibold">x*</span> = {fmt(targetInfo.x, 6)} (i = {targetInfo.idx})
+                            </div>
+                            <div className="mt-1">
+                                y<sub>pred</sub>(x*) = {fmt(targetInfo.pred, 9)}
+                            </div>
+                            <div>
+                                y<sub>corr</sub>(x*) = {fmt(targetInfo.corr, 9)}
+                            </div>
                         </div>
                     )}
                     {targetInfo.status === "off-grid" && (
@@ -256,25 +265,29 @@ export default function Interactive() {
                                 </linearGradient>
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
-                            <XAxis dataKey="x" stroke="#94a3b8" />
-                            <YAxis stroke="#94a3b8" />
-                            <Tooltip contentStyle={{ background: "#0f172a", border: "1px solid #334155", color: "#e2e8f0" }} />
+                            <XAxis dataKey="x" stroke="#94a3b8" tickFormatter={(v) => fmt(v, 6)} />
+                            <YAxis stroke="#94a3b8" tickFormatter={(v) => fmt(v, 6)} />
+                            <Tooltip
+                                contentStyle={{ background: "#0f172a", border: "1px solid #334155", color: "#e2e8f0" }}
+                                formatter={(value, name) => [fmt(Number(value), 9), name]}
+                                labelFormatter={(label) => `x = ${fmt(Number(label), 6)}`}
+                            />
                             <Legend wrapperStyle={{ color: "#e2e8f0" }} />
                             <Line type="monotone" dataKey="corr" name="Corrected" stroke="url(#g1)" strokeWidth={3} dot={{ r: 2 }} />
                             <Line type="monotone" dataKey="pred" name="Predicted" stroke="#f97316" strokeDasharray="4 4" strokeWidth={2} dot={{ r: 2 }} />
 
-                            {/* existing first-Milne marker (y4) */}
+                            {/* first Milne marker (y4 prediction) */}
                             {data.length >= 5 && data[4].pred && (
                                 <ReferenceDot x={data[4].x} y={data[4].pred} r={5} fill="#f97316" stroke="#0f172a" />
                             )}
 
-                            {/* NEW: highlight the target x on the chart (use corrected if available, else predicted) */}
+                            {/* highlight the target x */}
                             {targetInfo.status === "ok" && (
                                 <ReferenceDot
                                     x={targetInfo.x}
                                     y={targetInfo.corr ?? targetInfo.pred}
                                     r={6}
-                                    fill="#10b981" /* emerald */
+                                    fill="#10b981"
                                     stroke="#0f172a"
                                 />
                             )}
