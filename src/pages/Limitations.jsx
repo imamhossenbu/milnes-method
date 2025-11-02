@@ -3,22 +3,23 @@ import React from "react";
 export default function Limitations() {
     const limits = [
         {
-            title: "Requires Starters",
-            desc: "Needs y₀..y₃ values (from RK or another method) to begin predictions.",
+            title: "Starting Values Required",
+            desc: "Requires four starting values.",
         },
         {
-            title: "Not for Stiff ODEs",
-            desc: "Instabilities occur on stiff equations; implicit methods work better.",
+            title: "Uniform Step Size",
+            desc: "Works only when the step size h is uniform (equal spacing).",
         },
         {
-            title: "Step Size Sensitivity",
-            desc: "Accuracy and stability heavily depend on maintaining small h.",
+            title: "Round-off Error Effect",
+            desc: "Accuracy decreases if round-off errors accumulate in previous steps.",
         },
         {
-            title: "Uniform Step Requirement",
-            desc: "Classic Milne assumes constant spacing; adaptive steps require variants.",
+            title: "Predictor Divergence",
+            desc: "Predictor can diverge if the step size is too large.",
         },
     ];
+
 
     return (
         <div className="max-w-6xl mx-auto px-6 py-10">

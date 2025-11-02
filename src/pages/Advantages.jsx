@@ -3,22 +3,23 @@ import React from "react";
 export default function Advantages() {
     const data = [
         {
-            title: "Multi-step Efficiency",
-            desc: "Reuses past f-values → fewer new evaluations per step.",
+            title: "High Accuracy",
+            desc: "Gives high accuracy with fewer steps.",
         },
         {
-            title: "Accuracy per Cost",
-            desc: "Small step size (h) and 1–2 corrections yield high accuracy.",
+            title: "Time Saving",
+            desc: "Saves time — reuses previous values instead of recalculating everything.",
         },
         {
-            title: "Simple Pairing",
-            desc: "Pairs naturally with Simpson-type corrector for stability.",
+            title: "Low Computation Need",
+            desc: "Needs less computation compared to other numerical methods.",
         },
         {
-            title: "Great for Smooth ODEs",
-            desc: "Performs exceptionally on non-stiff, smooth differential equations.",
+            title: "Fast and Efficient",
+            desc: "Once starting values are known, it becomes fast and efficient.",
         },
     ];
+
 
     return (
         <div className="max-w-6xl mx-auto px-6 py-10">

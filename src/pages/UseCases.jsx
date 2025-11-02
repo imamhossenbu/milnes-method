@@ -3,22 +3,23 @@ import React from "react";
 export default function UseCases() {
     const cases = [
         {
-            title: "Engineering Dynamics",
-            desc: "Efficiently simulate smooth force systems using fewer function evaluations.",
+            title: "Numerical Solutions",
+            desc: "To find numerical solutions of differential equations.",
         },
         {
-            title: "Control & Signal Models",
-            desc: "Predictor–corrector structure stabilizes signal updates at fixed intervals.",
+            title: "Analytical Limitations",
+            desc: "Used when we can’t find an exact (analytical) solution.",
         },
         {
-            title: "Population & Growth Models",
-            desc: "Handles mild nonlinearities with solid numerical stability.",
+            title: "Physics & Engineering",
+            desc: "Helpful in physics and engineering problems like motion, heat, and current flow.",
         },
         {
-            title: "Education & Research",
-            desc: "Perfect for demonstrating multi-step vs. single-step method differences.",
+            title: "Biology & Economics",
+            desc: "Used in biology for population growth and in economics for rate of change and growth models.",
         },
     ];
+
 
     return (
         <div className="max-w-6xl mx-auto px-6 py-10">
